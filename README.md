@@ -9,14 +9,18 @@ mail.google.com.
 -------------------
 sub-domain
 
+[ref](iana.org)
+
+[ref2](root-servers.org)
+
 
 ## Client package for test the dns server
 ```sh
 
-# on rhel
+# on debian
 dnf install bind-utils
 
-# on debian 
+# on rhel 
 apt install dnsutils
 
 
@@ -62,8 +66,83 @@ nslookup -all
 apt install host
 apt install bind9 bind9-doc
 
+# you can see the cache in the cache only dns server
+rndc dumpdb -cache
+rndc flush
+
+ 
+
+# below version of dig hase a bug
+dig -v
+DiG 9.18.30-0ubuntu0.24.04.2-Ubuntu
+
+sudo apt remove --purge bind9-dnsutils
+
+sudo apt update
+
+sudo apt install bind9-dnsutils
+dig +trace yahoo.com +nodnssec
+
+```
 
 
+[download from here](https://www.isc.org/download/#BIND)
+## Setup Bind in ubuntu 24 
+
+```sh
+
+sudo add-apt-repository ppa:isc/bind
+sudo apt update
+
+sudo apt install bind9 bind9-dnsutils bind9-doc
+
+# named -v
+# BIND 9.18.39-0ubuntu0.24.04.1-Ubuntu (Extended Support Version) <id:>
+
+named -v
+BIND 9.20.13-1+ubuntu24.04.1+deb.sury.org+1-Ubuntu (Stable Release) <id:>
+
+
+
+cd /etc/bind
+
+```
+[option block] (https://bind9.readthedocs.io/en/v9.20.13/reference.html#options-block-grammar)
+# Basic configuration
+```sh
+vim /etc/bind/named.conf.options
+---------------------
+acl allowedclients {
+        192.168.96.0/24;
+};
+
+
+options {
+        directory "/var/cache/bind";
+        dnssec-validation no;
+        //listen-on-v6 { any; };
+        listen-on { 192.168.96.70; };
+        recursion yes;
+        allow-query { allowedclients; };
+        version none;
+        hostname none;
+
+};
+
+----------------------
+systemctl restart named
+systemctl cat named
+
+
+dig version.bind  TXT  CH
+
+named-checkconf
+
+```
+## service management
+
+```sh
+rndc status
 
 
 ```
