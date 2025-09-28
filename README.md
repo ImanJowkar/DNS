@@ -48,6 +48,8 @@ dig version.bind  TXT -c CH @ns0.dnsmadeeasy.com
 
 
 
+
+# work with nslookup
 nslookup cisco.com
 nslookup cisco.com 8.8.8.8
 
